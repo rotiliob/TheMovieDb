@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
  */
 public interface DatabaseConstants extends BaseColumns {
      String TMDB = "TmDb";
+     String IDRESULT = "idResult";
      String POSTERPATCH = "posterPatch";
      String ORIGINALTITLE = "originalTitle";
      String RELEASEDATE = "releaseDate";
@@ -14,12 +15,13 @@ public interface DatabaseConstants extends BaseColumns {
      String OVERVIEWER ="overViewer";
 
          StringBuilder CREATE_TMDB =
-            new StringBuilder("create table" + TMDB)
-                    .append("(" + _ID        + "integer primary key autoincrement, ")
-                    .append(POSTERPATCH      + "text,")
-                    .append(ORIGINALTITLE    + "text,")
-                    .append(RELEASEDATE      + "text,")
-                    .append(ORIGINALLANGUAGE + "text,")
-                    .append(OVERVIEWER       + "text,");
+            new StringBuilder("create table " + TMDB)
+                    .append(" (" + _ID        + " integer primary key autoincrement, ")
+                    .append(IDRESULT          + " integer, ")
+                    .append(POSTERPATCH       + " text, ")
+                    .append(ORIGINALTITLE     + " text, ")
+                    .append(RELEASEDATE       + " text, ")
+                    .append(ORIGINALLANGUAGE  + " text, ")
+                    .append(OVERVIEWER        + " text);");
 
 }

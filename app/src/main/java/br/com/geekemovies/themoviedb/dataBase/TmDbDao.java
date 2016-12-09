@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.geekemovies.themoviedb.R;
 import br.com.geekemovies.themoviedb.model.Result;
 
 /**
@@ -36,6 +35,7 @@ public class TmDbDao {
             MySqlOpenHelper mySqlOpenHelper = new MySqlOpenHelper(context);
             SQLiteDatabase db = mySqlOpenHelper.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseConstants.IDRESULT, resultTmDb.getId());
             contentValues.put(DatabaseConstants.POSTERPATCH, resultTmDb.getBackdropPath());
             contentValues.put(DatabaseConstants.ORIGINALTITLE, resultTmDb.getOriginalTitle());
             contentValues.put(DatabaseConstants.RELEASEDATE, resultTmDb.getReleaseDate());
@@ -73,12 +73,27 @@ public class TmDbDao {
             MySqlOpenHelper mySqlOpenHelper = new MySqlOpenHelper(context);
             SQLiteDatabase db = mySqlOpenHelper.getWritableDatabase();
 
-            Cursor cursor = db.rawQuery("select * from " + DatabaseConstants.TMDB + " where " + DatabaseConstants._ID + " = ?",
+            Cursor cursor = db.rawQuery("select * from " + DatabaseConstants.TMDB + " where " + DatabaseConstants.IDRESULT + " = ?",
                     new String[]{String.valueOf(resultTmDb.getId())});
             if (cursor.moveToFirst()) {
                 result = getTmDbFromCursor(cursor);
             }
             }
+        return result;
+    }
+
+    public Result result(String idResult){
+        Result result = null;
+        MySqlOpenHelper mySqlOpenHelper = new MySqlOpenHelper(context);
+        SQLiteDatabase db = mySqlOpenHelper.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("select * from " + DatabaseConstants.TMDB +
+                        " where " + DatabaseConstants.IDRESULT + " = ?",
+                new String[]{String.valueOf(idResult)});
+
+        if(cursor.moveToFirst()){
+            result = getTmDbFromCursor(cursor);
+        }
         return result;
     }
 
@@ -99,8 +114,8 @@ public class TmDbDao {
     public Result getTmDbFromCursor(Cursor cursor){
         Result result = new Result();
         if (cursor != null){
+            result.setId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(DatabaseConstants.IDRESULT))));
             result.setBackdropPath(cursor.getString(cursor.getColumnIndex(DatabaseConstants.POSTERPATCH)));
-            result.setId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(DatabaseConstants._ID))));
             result.setOriginalTitle(cursor.getString(cursor.getColumnIndex(DatabaseConstants.ORIGINALTITLE)));
             result.setReleaseDate(cursor.getString(cursor.getColumnIndex(DatabaseConstants.RELEASEDATE)));
             result.setOriginalLanguage(cursor.getString(cursor.getColumnIndex(DatabaseConstants.ORIGINALLANGUAGE)));

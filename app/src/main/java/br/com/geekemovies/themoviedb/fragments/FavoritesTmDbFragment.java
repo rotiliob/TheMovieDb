@@ -9,9 +9,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 
 import br.com.geekemovies.themoviedb.R;
+import br.com.geekemovies.themoviedb.adapter.TMDBAdapter;
+import br.com.geekemovies.themoviedb.dataBase.DatabaseEvent;
 import br.com.geekemovies.themoviedb.dataBase.TmDbDao;
 import br.com.geekemovies.themoviedb.interfaces.OnTmDbClick;
 import br.com.geekemovies.themoviedb.model.Result;
@@ -42,13 +48,32 @@ public class FavoritesTmDbFragment extends Fragment {
                 }
             }
         });
-        mlistViewTmdb = TmDbDao.getInstance(getActivity())
-                .get
         updateList();
+
         return view;
     }
 
-    private void updateList(){
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    private void updateList(){
+        resultList = TmDbDao.getInstance(getActivity()
+                .getApplication()
+                .getApplicationContext()).getFavoriteTmDb();
+        mlistViewTmdb.setAdapter(new TMDBAdapter(getActivity(), resultList));
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessagerEvent(DatabaseEvent event){
+        updateList();
+    }
+
 }

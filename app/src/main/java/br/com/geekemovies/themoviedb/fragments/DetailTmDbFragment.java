@@ -16,7 +16,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+
 import br.com.geekemovies.themoviedb.R;
+import br.com.geekemovies.themoviedb.dataBase.DatabaseEvent;
 import br.com.geekemovies.themoviedb.dataBase.TmDbDao;
 import br.com.geekemovies.themoviedb.model.Result;
 
@@ -65,12 +68,11 @@ public class DetailTmDbFragment extends Fragment {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-            FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
+            floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                   seveOrRemoveFavorite();
                 }
             });
         }
@@ -102,6 +104,23 @@ public class DetailTmDbFragment extends Fragment {
         changeFloatingButton();
 
         return view;
+    }
+
+    private void changeFloatingButton() {
+        int resource = isFavorite ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
+        floatingActionButton.setImageResource(resource);
+    }
+
+    public void seveOrRemoveFavorite(){
+        if(isFavorite){
+            tmDbDao.deleteTmDb(result);
+            isFavorite = false;
+        }else{
+            tmDbDao.insertTmDb(result);
+            isFavorite = true;
+        }
+        changeFloatingButton();
+        EventBus.getDefault().post(new DatabaseEvent());
     }
 
 }
